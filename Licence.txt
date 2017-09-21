@@ -1,0 +1,2 @@
+Il codice in questo Repository è a unica disposizione di chi partecipa al corso "competitive programming and contests" 2017/18 offerto dall'Università di Pisa.
+Per qualsiasi altra informazione riguardo la licenza si contatti l'autore.
