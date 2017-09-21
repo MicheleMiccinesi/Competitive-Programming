@@ -2,7 +2,7 @@
 
 /* Trapping Rain Water */
 /* Version 0 */
-/* Its a combination of 2 Leaders in Array.. This is a ridundant way of doing it . Thanks to guy that insisted that
+/* It's a combination of 2 Leaders in Array.. This is a ridundant way of doing it . Thanks to the guy who insisted that
    it is O(n) with (hidden) multiplying constant 2 */
 unsigned int wtr_qnt0(unsigned int *w,unsigned int n){
  if( n < 3 )return 0;
