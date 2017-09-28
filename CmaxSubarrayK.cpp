@@ -32,13 +32,11 @@ int main(){
     if(sliding_window.back().value <= v) sliding_window.pop_back();
     else break;
    }
-   sliding_window.emplace_back( array_element{i,v} );
-   for(j=0;j<sliding_window.size();j++) {
-    if(sliding_window.at(j).position == i-k) { 
-     sliding_window.erase(sliding_window.begin()+j);
-     break;
-    }
+   while( !sliding_window.empty() ){
+    if(sliding_window.front().position <= i-k) sliding_window.pop_front();
+    else break;
    }
+   sliding_window.emplace_back( array_element{i,v} );
    results << sliding_window.front().value << " ";
   }
   sliding_window.clear();
