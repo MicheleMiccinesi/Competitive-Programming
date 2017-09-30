@@ -1,7 +1,6 @@
 #include <iostream>
 #include <deque>
 #include <string>
-#include <sstream>
 
 struct array_element{
  int position;
@@ -10,7 +9,8 @@ struct array_element{
 
 
 int main(){
- std::stringstream results;
+ std::ios_base::sync_with_stdio(false);
+ 
  int T=0,N=0,k=0,i=0,v=0,j=0;
  std::cin >> T;
  std::deque<array_element> sliding_window;
@@ -25,7 +25,7 @@ int main(){
    }
    sliding_window.emplace_back( array_element{i,v} );
   }
-  results << sliding_window.front().value << " ";
+  std::cout << sliding_window.front().value << " ";
   for(;i<N;i++){
    std::cin >> v;
    while( !sliding_window.empty() ){
@@ -37,11 +37,9 @@ int main(){
     else break;
    }
    sliding_window.emplace_back( array_element{i,v} );
-   results << sliding_window.front().value << " ";
+   std::cout << sliding_window.front().value << " ";
   }
   sliding_window.clear();
-  results << std::endl;
+  std::cout << std::endl;
  }
- std::cout << results.str();
- return 1;
 }
