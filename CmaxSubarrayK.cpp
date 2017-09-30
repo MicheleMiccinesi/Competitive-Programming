@@ -1,12 +1,10 @@
 #include <iostream>
 #include <deque>
-#include <string>
 
 struct array_element{
  int position;
  int value;
 };
-
 
 int main(){
  std::ios_base::sync_with_stdio(false);
