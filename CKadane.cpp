@@ -1,25 +1,19 @@
 #include <iostream>
-#include <sstream>
-#include <string>
 
 int main(){
+ std::ios_base::sync_with_stdio(false);
  int T,n,sum,max,v;
  std::cin >> T;
- std::stringstream results;
- for(;T>0;T--){
-  max=sum=0;
+ while(T--){
   std::cin >> n;
-  std::cin >> v;
-  sum = max = v;
-  n--;
-  if(sum<0) sum=0;
-  for(;n>0;n--){
+  std::cin >> max;
+  sum = (max<0?0:max);
+  while(--n){
    std::cin >> v;
    sum += v;
    if( sum<0 ) sum=0;
    else if( sum>max ) max=sum;
   }
-  results << max << std::endl;
+  std::cout << max << std::endl;
  }
- std::cout << results.str();
 }
