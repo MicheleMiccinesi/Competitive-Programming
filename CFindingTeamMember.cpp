@@ -59,6 +59,8 @@ std::list<t_couple>& read_strenght(unsigned int n, std::list<t_couple>& lista){
 }
 
 int main(){
+ std::ios_base::sync_with_stdio(false);
+ 
  unsigned int n;
  std::cin >> n;
  n*=2;
