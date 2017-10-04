@@ -31,7 +31,7 @@ int main(){
     else break;
    }
    while( !sliding_window.empty() ){
-    if(sliding_window.front().position <= i-k) sliding_window.pop_front();
+    if(sliding_window.front().position == i-k) sliding_window.pop_front();
     else break;
    }
    sliding_window.emplace_back( array_element{i,v} );
