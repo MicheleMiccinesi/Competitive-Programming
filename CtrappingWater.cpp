@@ -1,13 +1,16 @@
 #include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
+#include <array>
 
-unsigned int water_quantity(std::vector<unsigned int>& w){
- if( w.size() < 3 )return 0;
- unsigned int maxR=0,maxL=0;
- unsigned int l=0,r=w.size()-1;	
- unsigned int wq=0;		
+unsigned int& water_quantity(std::array<unsigned int,101>& w){
+ static unsigned int wq;
+ wq=0;
+ if( w[0] < 3 )return wq;
+
+ static unsigned int maxR,maxL;
+ maxR=0; maxL=0;
+ static unsigned int l,r;	
+ l=1;r=w[0];
+
  while( r >= l ){
   if( maxL <= maxR ){
    if( w[l] > maxL ) maxL = w[l];
@@ -24,20 +27,16 @@ unsigned int water_quantity(std::vector<unsigned int>& w){
 }
 
 int main(){
- int T,n;
- unsigned int l;
- std::vector<unsigned int> w;
- w.reserve(100);
- std::stringstream results;
+ std::ios_base::sync_with_stdio(false);
+ 
+ unsigned int T,n;
+ std::array<unsigned int,101> w;
  std::cin >> T;
- for(;T>0;T--){
+ while(T--){
   std::cin >> n;
-  for(;n>>0;n--){
-   std::cin >> l;
-   w.push_back(l);
-  }
-  results << water_quantity(w) << std::endl;
-  w.clear();
+  w[0]=n;
+  do std::cin >> w[n];
+   while(--n);
+  std::cout << water_quantity(w) << std::endl;
  }
- std::cout << results.str();
 }
