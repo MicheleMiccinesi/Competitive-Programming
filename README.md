@@ -1,2 +1,2 @@
-# Competitive-Programming
-I collect here the solutions I have the time to implement for the course
+# Competitive Programming and Contest
+Please go to the [Wiki](Wiki) for the list of solved problems
