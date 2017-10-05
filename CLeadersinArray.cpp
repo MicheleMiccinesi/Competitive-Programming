@@ -6,6 +6,9 @@ int main(){
  std::ios_base::sync_with_stdio(false);
 
  unsigned int T, n;
+/* arr[0] is the lenght of the given array; while reading from r to l, leaders are recorded
+   from r to l starting from the last element of the array. In arr[arr[0]+1] the index of 
+   the leftmost leader still to be printed */
  unsigned int arr[MAX_T+2];
  std::cin >> T;
  while( T-- ){
