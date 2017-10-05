@@ -3,6 +3,8 @@
 const unsigned int MAX_T = 100;
 
 int main(){
+ std::ios_base::sync_with_stdio(false);
+
  unsigned int T, n;
  unsigned int arr[MAX_T+2];
  std::cin >> T;
