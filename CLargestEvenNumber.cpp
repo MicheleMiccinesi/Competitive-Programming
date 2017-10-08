@@ -1,6 +1,7 @@
 #include <iostream>
 
 int main(){
+ std::ios_base::sync_with_stdio(false);
  unsigned int T,c,temp;
  char d;
  std::cin >> T;
