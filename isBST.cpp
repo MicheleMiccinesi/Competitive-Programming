@@ -1,21 +1,20 @@
 bool isBSTrec(Node* root, int *mami){
-    int left[2], right[2];
+    int mami_child[2];
     
     if( root->left )
-        if( isBSTrec( root->left, left ) )
-            if( root->data < left[1] ) return false;
-            else mami[0] = left[0];
+        if( isBSTrec( root->left, mami_child ) )
+            if( root->data < mami_child[1] ) return false;
+            else mami[0] = mami_child[0];
         else return false;
     else mami[0] = root->data;
     if( root->right )
-        if( isBSTrec( root->right, right ) )
-            if( root->data > right[0] ) return false;
-            else mami[1] = right[1];
+        if( isBSTrec( root->right, mami_child ) )
+            if( root->data > mami_child[0] ) return false;
+            else mami[1] = mami_child[1];
         else return false;
     else mami[1] = root->data;
     return true;
 }   
-
 
 bool isBST(Node* root) {
  int mami[2];
