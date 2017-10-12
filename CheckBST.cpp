@@ -1,4 +1,5 @@
 #include <limits>
+/* In the specific case we wouldn't need limits because we get only strictly positive integers! Just set to 0... */
 bool isBST_(Node *root, int& last_seen) {
     if( !root ) return true;
     if( !isBST_( root->left, last_seen ) ) return false;
