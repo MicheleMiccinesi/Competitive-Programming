@@ -14,7 +14,7 @@ int main(){
 
  std::vector<int32_t> numeri;
  numeri.resize(n);
- int64_t sum{0}
+ int64_t sum{0};
 
  for(auto &x: numeri) {
   std::cin >> x;
