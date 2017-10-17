@@ -27,9 +27,9 @@ int main(){
  std::sort(queries.begin()+1, queries.end()-1);
  std::sort(numeri.begin()+1, numeri.end()-1);
  uint64_t maxSum{0};
- int64_t lll{1};
+ uint64_t lll{1};
  do maxSum += lll*numeri[n]*queries[n]*lll;
-  while(--n);
+  while(--n && queries[n]);
  
  std::cout << maxSum << std::endl;
 }
