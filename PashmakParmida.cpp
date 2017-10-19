@@ -6,11 +6,10 @@ class intBIT32{
 public:
  intBIT32 (uint32_t n){
   bit = std::vector<int32_t> (n+1,0);
-  std::fill( bit.begin(), bit.end(), 0 );
  };
 
- inline int32_t sum(uint32_t i) { 
-  bit[0] = 0;
+ inline int32_t& sum(uint32_t& ii) { 
+  bit[0] = 0; i = ii;
   while(i){
    bit[0] += bit[i];
    i ^= (i&(-i));
@@ -18,7 +17,15 @@ public:
   return bit[0];
  };
 
- inline void cadd(int32_t summand, uint32_t i){
+ inline void cadd(int32_t summand, uint32_t ii){
+  while (ii < bit.size()){
+   bit[ii] += summand;
+   ii += ii&(-ii);
+  }
+ };
+
+ inline void add(int32_t& summand, uint32_t& ii){
+  i = ii;
   while (i < bit.size()){
    bit[i] += summand;
    i += i&(-i);
@@ -26,7 +33,8 @@ public:
  };
 
 private:
- std::vector<int32_t> bit;  
+ std::vector<int32_t> bit; 
+ uint32_t i; 
 };
 
 struct numRep{
@@ -76,13 +84,15 @@ int main(){
 
  uint32_t rep = 0;
  uint64_t tot = 0;
+ uint32_t one=1;
+ int32_t mone=-1;
  int32_t k;
  auto i = indici2.begin()+1, j = indici1.begin()+1;
  while( i != indici2.end()-1  && numeri[*i][1] == rep+1 ) i++;
  ++rep;
  while( i != indici2.end()-1 ){
-  for( k = 0; numeri[*j][0] == rep && j != indici1.end()-1; ++k, ++j) repR.cadd( -1, *j );
-  if(k) repR.cadd( k, 1 );
+  for( k = 0; numeri[*j][0] == rep && j != indici1.end()-1; ++k, ++j) repR.add( mone, *j );
+  if(k) repR.add( k, one );
 
   while( numeri[*i][1] == rep+1 && i != indici2.end()-1 )
    tot += repR.sum( *(i++) );  
