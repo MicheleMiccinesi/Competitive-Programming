@@ -1,17 +1,16 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include <array>
 
 struct cube{
  unsigned short number;
- cube *pre,*suc{nullptr};
  bool group;
 };
 
 struct freq{
  unsigned short n{0};
- cube *l;
+ bool l;
+ bool v{false};
 };
 
 int main(){
@@ -28,13 +27,9 @@ int main(){
 
  for( auto& x: cubes ) { 
   std::cin >> x.number;
-  if( !tFreq[x.number].n++ ) {
-   nOneReps++;
-   tFreq[x.number].l = &x; }
-  else {
-   if( tFreq[x.number].n == 2 ) nTwoReps++; 
-   x.pre = tFreq[x.number].l;
-   x.pre->suc = tFreq[x.number].l = &x; }
+  if( !tFreq[x.number].n ) nOneReps++;
+  else if( tFreq[x.number].n == 1 ) nTwoReps++; 
+  tFreq[x.number].n++;
  }
 
  unsigned int tot = nOneReps+nTwoReps;
@@ -42,11 +37,10 @@ int main(){
  tot = (tot>>1)*(tot-(tot>>1));
  bool oneReps{0};
 
- for(auto x = cubes.end(); x!= cubes.begin();){
-  x--;
-  if( tFreq[x->number].n == 1 ) x->group = oneReps^=1;
-  else if( !x->suc ) x->group = ( tFreq[x->number].n%2 ? oddReps^=1 : 0 );
-  else x->group = x->suc->group^1;
+ for(auto &x: cubes){
+  if( tFreq[x.number].n == 1 ) x.group = oneReps^=1;
+  else if( !tFreq[x.number].v ) { tFreq[x.number].l = x.group = ( tFreq[x.number].n%2 ? oddReps^=1 : 0 ); tFreq[x.number].v = true; }
+  else x.group = tFreq[x.number].l^=1;
  }
 
  std::cout << tot <<'\n';
