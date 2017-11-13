@@ -1,5 +1,6 @@
 /* TTDSP - The Truly Deadly Swimming Pool */
 /* Copyright 2017-2187 Michele Miccinesi  */
+/* Origin of quantum vacuum energy :D     */
 
 #include <iostream>
 #include <vector>
@@ -290,6 +291,8 @@ int main(){
 	std::cout << "Inserire il numero di ripetizioni della simulazione casuale: ";
 	int32_t ripetizioni;
 	std::cin >> ripetizioni;
-	piscina.probabilityDist(ripetizioni, min, max);
+	if(ripetizioni<0) ripetizioni = -ripetizioni;
+	if(min>max) piscina.probabilityDist(ripetizioni,max,min);
+	else piscina.probabilityDist(ripetizioni, min, max);
 	return 0;
 }
