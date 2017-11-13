@@ -1,2 +1,6 @@
-Il codice in questo Repository è a unica disposizione di chi partecipa al corso "competitive programming and contests" 2017/18 offerto dall'Università di Pisa.
+"ICH WILL :)" licence
+
+Il codice in questo Repository è a unica disposizione di chi partecipa al corso "competitive programming and contests" 2017/18 offerto dall'Università di Pisa e ha avuto un riscontro positivo dall'autore.
 Per qualsiasi altra informazione riguardo la licenza si contatti l'autore.
+"ICH WILL :)" Copyright 2017-2117 Michele Miccinesi
+All uses of the materials in my repositories are disciplined by my willings.
