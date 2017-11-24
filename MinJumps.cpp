@@ -8,7 +8,6 @@ int main(){
 	unsigned short n;
 	std::vector<unsigned short> jumps;
 	jumps.reserve(N_MAX);
-	std::vector<short> minJumps(N_MAX+1);
 
 	unsigned short T;
 	std::cin >> T;
