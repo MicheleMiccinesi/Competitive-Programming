@@ -45,7 +45,7 @@ int main(){
 	for( int32_t i = n-1; i != -1; i-- )
 		prs[i].height = queue.Find(prs[i].tr)++;
 
-	for( auto person: prs ) 
+	for( auto& person: prs ) 
 		std::cout << person.name << ' ' << n-person.height << '\n';
 	std::cout << std::flush;
 
