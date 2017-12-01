@@ -1,6 +1,7 @@
 /* Weighted Job Scheduling */
 /* INPUT:  n° of Jobs */
 /* for each job: start time, end time, profit */
+/* O(n logn) time cost */
 
 #include <iostream>
 #include <vector>
