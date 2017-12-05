@@ -22,7 +22,7 @@ struct graph: std::vector<node>{
 private:
 	iterator t;
 };
-
+/* using templates to support pointers&, pointers&&, iterators&, iterators&&.. in one move */
 template <typename T>
 void mvct(T&& s){
 	s->v = true;
