@@ -1,7 +1,6 @@
 /* Python Indentation */
 /* Problem Source: Python Indentation on codeforces */
-/* Python Indentation */
-/* License: contact the author */
+/* Solution License: contact Michele Miccinesi */
 
 #include <iostream>
 #include <string>
