@@ -1,5 +1,5 @@
 /* Buses */
-/* Problem Source: Buses on codeforces */
+/* Problem Source: codeforces 102D */
 /* Solution license: contact Michele Miccinesi */
 
 #include <iostream>
