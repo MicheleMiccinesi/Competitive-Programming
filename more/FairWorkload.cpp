@@ -31,7 +31,8 @@ public:
 bool FairWorkload::_enough(const int& k, std::vector<int>& F) const {
 	int w=1, tk=0;
 	for( auto& f: F ){
-		if(tk+f<=k) tk+=f;
+		if(tk+f<=k) 
+			tk+=f;
 		else {
 			tk=f;
 			if(++w>_workers) return false;
