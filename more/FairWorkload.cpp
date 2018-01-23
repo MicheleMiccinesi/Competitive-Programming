@@ -1,7 +1,7 @@
 /* Fair Workload */
 /* Problem Source: topcoder */
 /* Solution License: contact Michele Miccinesi */
-/* Binary Search on possible answer; for each possibility,
+/* Binary Search on possible answers; for each possibility,
    you'll have to prove a greedy strategy for the partitioning,
    the proof is easy by contradiction */
 
@@ -15,9 +15,15 @@ class FairWorkload{
 	int _workers;
 public:
 	int getMostWork(std::vector<int> folders, int workers){
-		bool ok; _workers=workers; int m;
-		int b[]={*std::max_element(folders.begin(), folders.end()),std::accumulate(folders.begin(), folders.end(), 0)};
-		while(b[0]<b[1]) ok=_enough(m=(b[0]+b[1])>>1,folders),b[ok]=m+!ok;
+		bool ok; 
+		_workers=workers; 
+		int m;
+		int b[]={*std::max_element(folders.begin(), folders.end()), 
+			 std::accumulate(folders.begin(), folders.end(), 0)};
+		while(b[0]<b[1]) {
+			ok=_enough(m=(b[0]+b[1])>>1,folders);
+			b[ok]=m+!ok;
+		}
 		return b[0];
 	}
 };
