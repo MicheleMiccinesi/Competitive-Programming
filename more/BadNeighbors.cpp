@@ -1,5 +1,5 @@
 /* Bad Neighbors */
-/* Problem Source: codeforces */
+/* Problem Source: maybe topcoder? */
 /* Solution License: contact Michele Miccinesi */
 
 #include <vector>
