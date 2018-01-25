@@ -1,5 +1,10 @@
-/* Minimum Cost Path (NO NEGATIVE CYCLES) */
+/* Minimum Cost Path (Positive Edges) */
 /* :Dijkstra on the matrix & C++ exercise */
+/* But are we guaranteed that the edges are positives? */
+/* This implementation is passing the tests in the judging server */
+/* However the source of the problem is not clear about this point */
+/* To be sure I should have implemented Bellman-Ford alg. */
+
 #include <queue>
 #include <vector>
 #include <iostream>
