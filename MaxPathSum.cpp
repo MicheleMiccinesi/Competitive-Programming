@@ -1,3 +1,5 @@
+//Disclaimer: this solution was suggested in class by the professor
+
 int maxPathSum_(struct Node *root, int& max){
     if(!root) return 0;
     int maxL = maxPathSum_(root->left, max);
