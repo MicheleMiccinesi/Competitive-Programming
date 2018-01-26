@@ -1,7 +1,6 @@
 /* Minimum Cost Path (Positive Edges) */
 /* With (non optimal implementation of) Dijkstra */
-/* Is it guaranteed that the edges are positives?! */
-/* Otherwise, use Bellman Ford */
+/* Assuming positive edges */
 
 #include <queue>
 #include <vector>
