@@ -140,7 +140,7 @@ int main(){
 
 	int min_path;
 	matrix_graph<int> M;	 	M.reserve(N_MAX*N_MAX);
-	priority_queue_with_reserve<distance<decltype(M)>> D(N_MAX*N_MAX);	
+	priority_queue_with_reserve<distance<decltype(M)>> D(N_MAX*N_MAX*3);	
 
 	short N,T;
 	std::cin >> T;
