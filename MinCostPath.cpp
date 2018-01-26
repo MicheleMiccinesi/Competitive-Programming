@@ -1,9 +1,6 @@
 /* Minimum Cost Path (Positive Edges) */
-/* :Dijkstra on the matrix & C++ exercise */
-/* But are we guaranteed that the edges are positives? */
-/* This implementation is passing the tests in the judging server */
-/* However the source of the problem is not clear about this point */
-/* To be sure I should have implemented Bellman-Ford alg. */
+/* Is it guaranteed that the edges are positives?! */
+/* Otherwise, use Bellman Ford */
 
 #include <queue>
 #include <vector>
@@ -116,23 +113,24 @@ struct matrix_graph : std::vector<node<matrix_graph<T>,T>> {
 template <class O>
 struct distance{
 	typename O::iterator it;
+	int d;
 	distance( decltype(it)&& iit, int&& dd ):
-	it{iit} {
+	it{iit}, d{dd} {
 		iit->vv = 1;
 		iit->d = dd;
 	}
 	distance( decltype(it)&& iit, int& dd ):
-	it{iit} {
+	it{iit}, d{dd} {
 		iit->vv = 1;
 		iit->d = dd;
 	}
 	distance( decltype(it)& iit, int&& dd ):
-	it{iit} {
+	it{iit}, d{dd} {
 		iit->vv = 1;
 		iit->d = dd;
 	}
 	friend bool operator<(const distance<O>& a, const distance<O>& b){
-		return a.it->d > b.it->d;		//The nearer the greater!
+		return a.d > b.d;		//The nearer the greater!
 	}
 };
 
@@ -157,6 +155,10 @@ int main(){
     		D.emplace(distance<decltype(M)>(M.begin(), M[0].v));
     		auto it = D.top().it;
     		while(!D.empty()){
+			if( D.top().it->d < D.top().d ){
+				D.pop();
+				continue;
+			}
     			it = D.top().it;	it->vv = 2;
     			D.pop();
     			for( auto &inode: it->l ){
@@ -165,7 +167,8 @@ int main(){
     					D.emplace(distance<decltype(M)>(inode, it->d+inode->v));
     					break;
     				case 1:
-    					inode->d = std::min( inode->d, it->d+inode->v );
+					if( it->d+inode->v < inode->d )
+						D.emplace(distance<decltype(M)>(inode, it->d+inode->v));
     				}
     			}
     		}   
