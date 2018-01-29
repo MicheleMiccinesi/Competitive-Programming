@@ -1,4 +1,4 @@
-#include <unordered_map>
+#define NDEBUG
 #include <iostream>
 #include <vector>
 #include <sstream>
