@@ -123,7 +123,7 @@ struct integer{
 			for( i = 0; i != b.size; ++i )
 				digit[i] += b.digit[i];
 		}
-		countTrim = std::max(b.countTrim, countTrim)+1;
+		countTrim = b.countTrim + countTrim + 2;
 		size = digit.size();
 		if(countTrim>oughtTrim) 
 			normalize();
@@ -142,7 +142,7 @@ struct integer{
 			for( i = 0; i != b.size; ++i )
 				digit[i] += b.digit[i];
 		}
-		countTrim = std::max(b.countTrim, countTrim)+1;
+		countTrim = b.countTrim + countTrim + 2;
 		size = digit.size();
 		if(countTrim>oughtTrim) 
 			normalize();
@@ -156,7 +156,7 @@ struct integer{
 			sum.digit[i] = min.digit[i]+max.digit[i];
 		for(; i != max.size; ++i)
 			sum.digit[i] = max.digit[i];
-		sum.countTrim = std::max(max.countTrim, min.countTrim)+1;
+		sum.countTrim = max.countTrim + min.countTrim + 2;
 		if(sum.countTrim > sum.oughtTrim) 
 			sum.normalize();
 		return sum;
@@ -169,7 +169,7 @@ struct integer{
 				dif.digit[i] = digit[i]-b.digit[i];
 			for(; i != b.size; ++i)
 				dif.digit[i] = -b.digit[i];
-			dif.countTrim = std::max(countTrim, b.countTrim)+1;
+			dif.countTrim = countTrim + b.countTrim + 2;
 			if(dif.countTrim > oughtTrim) 
 				dif.normalize();
 			return dif;
@@ -180,7 +180,7 @@ struct integer{
 				dif.digit[i] = digit[i]-b.digit[i];
 			for( ; i != size; ++i)
 				dif.digit[i] = digit[i];
-			dif.countTrim = std::max(countTrim, b.countTrim)+1;
+			dif.countTrim = countTrim + b.countTrim + 2;
 			if(dif.countTrim > oughtTrim) 
 				dif.normalize();
 			return dif;
@@ -194,7 +194,7 @@ struct integer{
 				dif.digit[i] = digit[i]-b.digit[i];
 			for(; i != b.size; ++i)
 				dif.digit[i] = -b.digit[i];
-			dif.countTrim = std::max(countTrim, b.countTrim)+1;
+			dif.countTrim = countTrim + b.countTrim + 2;
 			if(dif.countTrim > oughtTrim) 
 				dif.normalize();
 			return dif;
@@ -205,7 +205,7 @@ struct integer{
 				dif.digit[i] = digit[i]-b.digit[i];
 			for( ; i != size; ++i)
 				dif.digit[i] = digit[i];
-			dif.countTrim = std::max(countTrim, b.countTrim)+1;
+			dif.countTrim = countTrim + b.countTrim + 2;
 			if(dif.countTrim > oughtTrim) 
 				dif.normalize();
 			return dif;
@@ -225,7 +225,7 @@ struct integer{
 			for( i = 0; i != b.size; ++i)
 				digit[i] -= b.digit[i];
 		}
-		countTrim = std::max( countTrim, b.countTrim )+1;
+		countTrim = countTrim + b.countTrim + 2;
 		size = digit.size();
 		if(countTrim>oughtTrim) 
 			normalize();
@@ -244,7 +244,7 @@ struct integer{
 			for( i = 0; i != b.size; ++i)
 				digit[i] -= b.digit[i];
 		}
-		countTrim = std::max( countTrim, b.countTrim )+1;
+		countTrim = countTrim + b.countTrim, + 2;
 		size = digit.size();
 		if(countTrim>oughtTrim) 
 			normalize();
