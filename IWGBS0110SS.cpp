@@ -1,436 +1,359 @@
+#define NDEBUG
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <cassert>
 
-const int64_t powers10[] = {1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000,10000000000,100000000000,1000000000000,10000000000000,100000000000000,1000000000000000};
+const int64_t powers10[] = {1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000,10000000000,100000000000,1000000000000,10000000000000,100000000000000,1000000000000000,10000000000000000,100000000000000000,1000000000000000000};
 const int64_t& integerWordSize = powers10[9];
+const int64_t& integerWordSize2 = powers10[18];
+const int64_t zero = 0;
 struct integer{
-	integer(): size{2}, digit(2), exponent(64){}
-	integer(int64_t&& d): size{d}, digit(d), exponent(64){}
-	integer(int64_t& d): size{d}, digit(d), exponent(64){}
-	integer(int64_t&& d,int64_t &&v): size{d}, digit(d,v), exponent(64){}
-	integer(int64_t& d,int64_t &v): size{d}, digit(d,v), exponent(64){}
-	integer(integer&& a): size{a.size}, digit{a.digit}, exponent(64){}
-	integer(integer& a): size{a.size}, digit{a.digit}, exponent(64){}
+	integer(): size{0}, digit(0), exponent(64){}
+	explicit integer(size_t&& d): size{static_cast<int64_t>(d)}, digit(d,0), exponent(64){}
+	explicit integer(size_t& d): size{static_cast<int64_t>(d)}, digit(d,0), exponent(64){}
+	// the next constructor shall be changed if integerWordSize is not powers10[9]
+	integer(int64_t n){
+		if( n >= integerWordSize2 || n <= -integerWordSize2 ){
+			size=3;
+			digit=decltype(digit)(3);
+			digit[0]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[1]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[2]=n;
+		} else if( n >= integerWordSize || n <= -integerWordSize ){
+			size=2;
+			digit=decltype(digit)(2);
+			digit[0]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[1]=n;
+		} else {
+			size=1;
+			digit=decltype(digit)(1);
+			digit[0]=n;
+		}
+	}
+	integer(integer&& a): size{0}, digit(0), exponent(64), countTrim{0}{
+		std::swap(size, a.size);
+		std::swap(digit, a.digit);
+		std::swap(countTrim, a.countTrim);
+	}
+	integer(integer& a): size{a.size}, digit(a.digit), exponent(64), countTrim{a.countTrim} {}
 
 	int64_t size;
 	int64_t i,j;
 	std::vector<int64_t> digit;
 	void normalize(){
-		for(i=size-1;digit[i]==0 && i;i--);
-		digit.resize(i+1);
-		size=i+1;
-		if(digit[size-1]<0){
-			for(i=0;i!=size-1;i++) 
-				if(digit[i]>0){
+		//raw_print();
+		if(!size) 
+			return;
+		// removing leading 0s
+		for(i=size-1; digit[i]==zero && i; --i);
+		if( digit[i]==zero ){
+			digit.resize(0);
+			size=0;
+			countTrim=0;
+			return;
+		}
+		//raw_print();
+		size=++i;
+		// trimming 1:
+		for( i=0; i!=size-1; ++i )
+			if( digit[i]>=integerWordSize || digit[i]<=-integerWordSize ){
+				digit[i+1] += digit[i]/integerWordSize;
+				digit[i] %= integerWordSize;
+			}
+		if( digit[size-1]>=integerWordSize || digit[size-1]<=-integerWordSize ){
+			digit.resize(++size);
+			digit[size-1]=digit[size-2]/integerWordSize;
+			digit[size-2]%=integerWordSize;
+		} else
+			digit.resize(size);
+		//raw_print();
+		// uniformization of signs:
+		if(digit[size-1]<zero){
+			for(i=0; i!=size-1; ++i) 
+				if(digit[i]>zero){
 					digit[i]-=integerWordSize;
-					digit[i+1]++;
-					if(digit[i+1]>=integerWordSize){
-						digit[i+2]+=digit[i+1]/integerWordSize;
-						digit[i+1]%=integerWordSize;
-					}
+					++digit[i+1];
 				}
 		}
 		else{
 			for(i=0;i!=size-1;i++) 
 				if(digit[i]<0){
 					digit[i]+=integerWordSize;
-					digit[i+1]--;
-					if(digit[i+1]<=-integerWordSize){
-						digit[i+2]+=digit[i+1]/integerWordSize;
-						digit[i+1]%=integerWordSize;
-					}
+					--digit[i+1];
 				}
 		}
-		for(i=size-1;digit[i]==0 && i;i--);
+		//raw_print();
+		// removing leading 0s
+		for(i=size-1;digit[i]==zero && i!=0; --i);
 		digit.resize(i+1);
 		size=i+1;
 		countTrim = 0;
+		//raw_print();
 	}
 
 	integer operator+(integer& b){
-		if(this->size > b.size) return integerSum(b,*this);
-		else return integerSum(*this,b);
+		if(this->size > b.size) 
+			return integerSum(b,*this);
+		else 
+			return integerSum(*this,b);
 	}
 
 	integer operator+(integer&& b){
-		if(this->size > b.size) return integerSum(b,*this);
-		else return integerSum(*this,b);
+		if(this->size > b.size) 
+			return integerSum(b,*this);
+		else 
+			return integerSum(*this,b);
 	}
 
 	integer& operator+=(integer& b){
 		if(size < b.size) {
-			digit.resize(b.size+1);
-			for(digit[size] = i = 0; i != size; i++){
+			digit.resize(b.size);
+			for( i = 0; i != size; ++i)
 				digit[i] += b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				digit[i] += b.digit[i];
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim += b.countTrim+1;
+			for(; i != b.size; ++i )
+				digit[i] = b.digit[i];
 		}
 		else{
-			digit.resize(size+1);
-			for(digit[size] = i = 0; i != b.size; i++){
+			for( i = 0; i != b.size; ++i )
 				digit[i] += b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim++;
 		}
+		countTrim = b.countTrim + countTrim + 2;
 		size = digit.size();
-		if(countTrim>=oughtTrim) normalize();
+		if(countTrim>oughtTrim) 
+			normalize();
 		return *this;
 	}
 
 	integer& operator+=(integer&& b){
 		if(size < b.size) {
-			digit.resize(b.size+1);
-			for(digit[size] = i = 0; i != size; i++){
+			digit.resize(b.size);
+			for( i = 0; i != size; ++i)
 				digit[i] += b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				digit[i] += b.digit[i];
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim += b.countTrim+1;
+			for(; i != b.size; ++i )
+				digit[i] = b.digit[i];
 		}
 		else{
-			digit.resize(size+1);
-			for(digit[size] = i = 0; i != b.size; i++){
+			for( i = 0; i != b.size; ++i )
 				digit[i] += b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim++;
 		}
+		countTrim = b.countTrim + countTrim + 2;
 		size = digit.size();
-		if(countTrim>=oughtTrim) normalize();
+		if(countTrim>oughtTrim) 
+			normalize();
 		return *this;
 	}
 
 	integer integerSum(integer& min, integer& max){
-		integer sum(max.size+1);
+		integer sum(max.size);
 
-		for(sum.digit[0] = i = 0; i != min.size; i++){
-			sum.digit[i] += min.digit[i]+max.digit[i];
-			sum.digit[i+1] = sum.digit[i]/integerWordSize;
-			sum.digit[i] %= integerWordSize;
-		}
-		for(;i != max.size; i++){
-			sum.digit[i] += max.digit[i];
-			sum.digit[i+1] = sum.digit[i]/integerWordSize;
-			sum.digit[i] %= integerWordSize;
-		}
-		sum.countTrim = max.countTrim+1;
-		if(sum.countTrim>=sum.oughtTrim) sum.normalize();
+		for(i = 0; i != min.size; ++i)
+			sum.digit[i] = min.digit[i]+max.digit[i];
+		for(; i != max.size; ++i)
+			sum.digit[i] = max.digit[i];
+		sum.countTrim = max.countTrim + min.countTrim + 2;
+		if(sum.countTrim > sum.oughtTrim) 
+			sum.normalize();
 		return sum;
 	} 
 
 	integer operator-(integer& b){
 		if(size < b.size) {
-			integer dif(b.size+1);
-			for(dif.digit[0] = i = 0; i != size; i++){
-				dif.digit[i] += digit[i]-b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				dif.digit[i] -= b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			if((countTrim+=b.countTrim+1) >= oughtTrim) normalize();
+			integer dif(b.size);
+			for(i = 0; i != size; ++i)
+				dif.digit[i] = digit[i]-b.digit[i];
+			for(; i != b.size; ++i)
+				dif.digit[i] = -b.digit[i];
+			dif.countTrim = countTrim + b.countTrim + 2;
+			if(dif.countTrim > oughtTrim) 
+				dif.normalize();
 			return dif;
 		}
 		else{
-			integer dif(size+1);
-			for(dif.digit[0] = i = 0; i != b.size; i++){
-				dif.digit[i] += digit[i]-b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			if(++countTrim>=oughtTrim) normalize();
+			integer dif(size);
+			for( i = 0; i != b.size; ++i )
+				dif.digit[i] = digit[i]-b.digit[i];
+			for( ; i != size; ++i)
+				dif.digit[i] = digit[i];
+			dif.countTrim = countTrim + b.countTrim + 2;
+			if(dif.countTrim > oughtTrim) 
+				dif.normalize();
 			return dif;
 		}
 	}
 
 	integer operator-(integer&& b){
 		if(size < b.size) {
-			integer dif(b.size+1);
-			for(dif.digit[0] = i = 0; i != size; i++){
-				dif.digit[i] += digit[i]-b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				dif.digit[i] -= b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			if((countTrim+=b.countTrim+1)>=oughtTrim) normalize();
+			integer dif(b.size);
+			for(i = 0; i != size; ++i)
+				dif.digit[i] = digit[i]-b.digit[i];
+			for(; i != b.size; ++i)
+				dif.digit[i] = -b.digit[i];
+			dif.countTrim = countTrim + b.countTrim + 2;
+			if(dif.countTrim > oughtTrim) 
+				dif.normalize();
 			return dif;
 		}
 		else{
-			integer dif(size+1);
-			for(dif.digit[0] = i = 0; i != b.size; i++){
-				dif.digit[i] += digit[i]-b.digit[i];
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				dif.digit[i+1] = dif.digit[i]/integerWordSize;
-				dif.digit[i] %= integerWordSize;
-			}
-			if(++countTrim>=oughtTrim) normalize();
+			integer dif(size);
+			for( i = 0; i != b.size; ++i )
+				dif.digit[i] = digit[i]-b.digit[i];
+			for( ; i != size; ++i)
+				dif.digit[i] = digit[i];
+			dif.countTrim = countTrim + b.countTrim + 2;
+			if(dif.countTrim > oughtTrim) 
+				dif.normalize();
 			return dif;
 		}
 	}
 
+
 	integer& operator-=(integer& b){
 		if(size < b.size) {
-			digit.resize(b.size+1);
-			for(digit[size] = i = 0; i != size; i++){
+			digit.resize(b.size);
+			for( i = 0; i != size; ++i )
 				digit[i] -= b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				digit[i] -= b.digit[i];
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim+=b.countTrim+1;
+			for(;i != b.size; ++i)
+				digit[i] = -b.digit[i];
 		}
 		else{
-			digit.resize(size+1);
-			for(digit[size] = i = 0; i != b.size; i++){
+			for( i = 0; i != b.size; ++i)
 				digit[i] -= b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim++;
 		}
+		countTrim = countTrim + b.countTrim + 2;
 		size = digit.size();
-		if(countTrim>=oughtTrim) normalize();
+		if(countTrim>oughtTrim) 
+			normalize();
 		return *this;
 	}
 
 	integer& operator-=(integer&& b){
 		if(size < b.size) {
-			digit.resize(b.size+1);
-			for(digit[size] = i = 0; i != size; i++){
+			digit.resize(b.size);
+			for( i = 0; i != size; ++i )
 				digit[i] -= b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != b.size; i++){
-				digit[i] -= b.digit[i];
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim += b.countTrim+1;
+			for(;i != b.size; ++i)
+				digit[i] = -b.digit[i];
 		}
 		else{
-			digit.resize(size+1);
-			for(digit[size] = i = 0; i != b.size; i++){
+			for( i = 0; i != b.size; ++i)
 				digit[i] -= b.digit[i];
-				digit[i+1] += digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			for(;i != size; i++){
-				digit[i+1] = digit[i]/integerWordSize;
-				digit[i] %= integerWordSize;
-			}
-			countTrim++;
 		}
+		countTrim = countTrim + b.countTrim, + 2;
 		size = digit.size();
-		if(countTrim>=oughtTrim) normalize();
+		if(countTrim>oughtTrim) 
+			normalize();
 		return *this;
 	}
-
-	integer operator*(integer& b){
-//		if(size*b.size>fastProduct) return fastMul(*this,b);
-		integer pro(size+b.size, 0);
-		for( i=0; i!=b.size; i++)
-			for( j=0; j!=size; j++){
-				pro.digit[i+j] += digit[j]*b.digit[i];
-				pro.digit[i+j+1] += pro.digit[i+j]/integerWordSize;
-				pro.digit[i+j] %= integerWordSize;
-			}
-		pro.countTrim = countTrim*b.countTrim;
-		if(pro.countTrim > pro.oughtTrim) pro.normalize();
-		return pro;
-	}
-	integer operator*(integer&& b){
-//		if(size*b.size>fastProduct) return fastMul(*this,b);
-		integer pro(size+b.size, 0);
-		for( i=0; i!=b.size; i++)
-			for( j=0; j!=size; j++){
-				pro.digit[i+j] += digit[j]*b.digit[i];
-				pro.digit[i+j+1] += pro.digit[i+j]/integerWordSize;
-				pro.digit[i+j] %= integerWordSize;
-			}
-		pro.countTrim = countTrim*b.countTrim;
-		if(pro.countTrim > pro.oughtTrim) pro.normalize();
-		return pro;
-	}
-
-	integer& operator*=(integer&& b){
-//		if(size*b.size>fastProduct) return fastMul(*this,b);
-		integer pro(size+b.size, 0);
-		for( i=0; i!=b.size; i++)
-			for( j=0; j!=size; j++){
-				pro.digit[i+j] += digit[j]*b.digit[i];
-				pro.digit[i+j+1] += pro.digit[i+j]/integerWordSize;
-				pro.digit[i+j] %= integerWordSize;
-			}
-		pro.countTrim = countTrim*b.countTrim;
-		if(pro.countTrim > pro.oughtTrim) pro.normalize();
-		*this = pro;
-		return *this;
-	}
-
-	integer& operator*=(integer& b){
-//		if(size*b.size>fastProduct) return fastMul(*this,b);
-		integer pro(size+b.size, 0);
-		for( i=0; i!=b.size; i++)
-			for( j=0; j!=size; j++){
-				pro.digit[i+j] += digit[j]*b.digit[i];
-				pro.digit[i+j+1] += pro.digit[i+j]/integerWordSize;
-				pro.digit[i+j] %= integerWordSize;
-			}
-		pro.countTrim = countTrim*b.countTrim;
-		if(pro.countTrim > pro.oughtTrim) pro.normalize();
-		*this = pro;
-		return *this;
-	}
-
-	integer& toPow(int64_t e){
-		if(e<0) return *this=0;
-		else if(e==0) return *this=1;
-		else if(e==1) return *this;
-		else{
-			integer power(1,1);
-			i=0;
-			while(e){
-				exponent[i++] = e%2;
-				e >>= 1;
-			}
-			for(j=i-1;j!=-1;j--){
-				power *= power;
-				if(exponent[j]) power *= *this;
-			}
-			if(power.countTrim > power.oughtTrim) power.normalize();
-			*this = power;
-			return *this;
-		}
-	}
-
-	inline integer& operator/(integer& b){}
 
 	integer& operator=(integer& b){
 		if(&b != this){
-			this->digit=b.digit;
-			this->size=b.size;
-			this->countTrim=b.countTrim;
+			digit=b.digit;
+			size=b.size;
+			countTrim=b.countTrim;
 		}
 		return *this;
 	}
 
 	integer& operator=(integer&& b){
-		this->digit=b.digit;
-		this->size=b.size;
-		this->countTrim=b.countTrim;
+		digit.resize(0);
+		size=0;
+		countTrim=0;
+		std::swap(digit, b.digit);
+		std::swap(size, b.size);
+		std::swap(countTrim, b.countTrim);
 		return *this;
 	}
 
-	integer& operator=(int64_t& b){
-		integer& a = *this;
-		if(b>=integerWordSize || b<=-integerWordSize) {
-			a.size=2;
-			a.digit.resize(2);
-			a.digit[0] = b%integerWordSize;
-			a.digit[1] = b/integerWordSize;
+	integer& operator=(int64_t n){
+		//std::cout << "=" << n << std::endl;
+		if( n >= integerWordSize2 || n <= -integerWordSize2 ){
+			size=3;
+			digit.resize(3);
+			digit[0]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[1]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[2]=n;
+		} else if( n >= integerWordSize || n <= -integerWordSize ){
+			size=2;
+			digit.resize(2);
+			digit[0]=(n%integerWordSize);
+			n/=integerWordSize;
+			digit[1]=n;
+		} else {
+			size=1;
+			digit.resize(1);
+			digit[0]=n;
 		}
-		else {
-			a.size=1;
-			a.digit.resize(1);
-			a.digit[0] = b;
-		}
-		return a;
-	}
-
-	integer& operator=(int64_t&& b){
-		integer& a = *this;
-		if(b>=integerWordSize || b<=-integerWordSize) {
-			a.digit.resize(2);
-			a.size=2;
-			a.digit[0] = b%integerWordSize;
-			a.digit[1] = b/integerWordSize;
-		}
-		else {
-			a.size=1;
-			a.digit.resize(1);
-			a.digit[0] = b;
-		}
-		return a;
+		return *this;
 	}
 
 	friend std::ostream& operator<<(std::ostream& in, integer& a){
-		a.normalize();
+		assert(a.size==a.digit.size());
+		if(a.size==0){
+			std::cout << 0;
+			return in;
+		}
+		if(a.countTrim)
+			a.normalize();
+		if(a.size==0){
+			std::cout << 0;
+			return in;
+		}
 		auto old_settings = in.flags();
-
+		
 		in << a.digit[a.size-1];
 		in << std::setfill('0');
-		for( a.i = a.size-2; a.i!=-1; a.i--) in  << std::setw(9) << (a.digit[a.i]<0?-a.digit[a.i]:a.digit[a.i]);
+		for( a.i = a.size-2; a.i>=zero; --a.i) 
+			in  << std::setw(9) << (a.digit[a.i]<zero?-a.digit[a.i]:a.digit[a.i]);
 		in.flags(old_settings);
 		return in;
 	}
 
 	friend std::ostream& operator<<(std::ostream& in, integer&& a){
-		a.normalize();
+		assert(a.size==a.digit.size());
+		if(a.size==0){
+			std::cout << 0;
+			return in;
+		}
+		if(a.countTrim)
+			a.normalize();
+		if(a.size==0){
+			std::cout << 0;
+			return in;
+		}
 		auto old_settings = in.flags();
 
 		in << a.digit[a.size-1];
 		in << std::setfill('0');
-		for( a.i = a.size-2; a.i!=-1; a.i--) in  << std::setw(9) << (a.digit[a.i]<0?-a.digit[a.i]:a.digit[a.i]);
+		for( a.i = a.size-2; a.i>=zero; --a.i) 
+			in  << std::setw(9) << (a.digit[a.i]<zero?-a.digit[a.i]:a.digit[a.i]);
 		in.flags(old_settings);
 		a.countTrim = 0;
 		return in;
 	}
 
+	void raw_print(){
+		for( auto &cc: digit )
+			std::cout << cc << '_';
+		std::cout << std::endl;
+	}
+
 	~integer(){}
 
 	std::vector<bool> exponent;
-	int countTrim{0}, oughtTrim{30};
+	int countTrim{0};
+	static const int oughtTrim{999999998};
 	int fastProduct{100};
 };
+
+
 int64_t ONE = 1;
 int64_t fib90_91[] = {4660046610375530309, 7540113804746346429};
 
@@ -447,11 +370,10 @@ int64_t fibonacci(int64_t n){
 
 /* to be used ONLY for n>91 */
 integer fibonacciBig(int64_t n){
-	integer a[] = {integer(ONE), integer(ONE)};
-	a[0] = fib90_91[0];
-	a[1] = fib90_91[1];
+	integer a[] = {integer(fib90_91[0]), integer(fib90_91[1])};
+	
 	if(n<=91){
-		return integer(1,fibonacci(n));
+		return integer(fibonacci(n));
 	}
 	else{
 		bool i=1;
