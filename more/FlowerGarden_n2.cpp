@@ -3,7 +3,7 @@
 /* Solution License: contact Michele Miccinesi */
 
 /* Solution O(n^2) */
-/* I have in mind an O(n log n) one using graphs */
+/* Do I have in mind an O(n log n) one using graphs? No */
 
 #include <vector>
 #include <numeric>
