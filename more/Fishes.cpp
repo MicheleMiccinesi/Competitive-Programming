@@ -34,13 +34,7 @@ std::vector<int> fill_occurrences(const int& r, const int& l){
 
 typedef std::vector<int> vi;
 struct pt{
-	pt(int& ii, int& jj):i(ii),j(jj){
-		p=i*static_cast<int64_t>(j);
-	}
-	pt(int& ii, int&& jj):i(ii),j(jj){
-		p=i*static_cast<int64_t>(j);
-	}
-	pt(int&& ii, int&& jj):i(ii),j(jj){
+	pt(int const& ii, int const& jj): i(ii), j(jj){
 		p=i*static_cast<int64_t>(j);
 	}
 	int i,j;
@@ -56,8 +50,10 @@ struct pqr: std::priority_queue<T,std::vector<T>>{
 		this->c.reserve(s);
 	}
 };
+
 int64_t put_fishes(vi& M, vi& N, vi& njm, int k){
-	int64_t sum = 0; int tMN,i,j;
+	int64_t sum = 0; 
+	int tMN,i,j;
 	auto bM = M.begin()-1;	auto bN = N.begin()-1;	auto tnjm = njm.begin()-1;
 	pqr<pt> Q(M.size());
 	Q.emplace(M.size(),tnjm[M.size()]--);
@@ -69,9 +65,12 @@ int64_t put_fishes(vi& M, vi& N, vi& njm, int k){
 		std::cout << "VALORE: "<<Q.top().p << " quanti: " << tMN << '\n';
 #endif
 		Q.pop();
-		if(!(k-=tMN)) return sum;
-		if(tnjm[i])Q.emplace(i,tnjm[i]--);
-		if(i!=1 && tnjm[i-1]==N.size())Q.emplace(i-1,tnjm[i-1]--);	
+		if(!(k-=tMN)) 
+			return sum;
+		if(tnjm[i])
+			Q.emplace(i,tnjm[i]--);
+		if(i!=1 && tnjm[i-1]==N.size())
+			Q.emplace(i-1,tnjm[i-1]--);	
 	}
 }
 int main(){
@@ -80,12 +79,13 @@ int main(){
 	int m,n,r,k,im,in;
 	int64_t sum;
 	std::cin >> m >> n >> r >> k;
-	if(m>n) std::swap(m,n);
+	if(m>n) 
+		std::swap(m,n);
 	std::vector<int> M(fill_occurrences(r,m));
 	std::vector<int> N(fill_occurrences(r,n));
 #ifndef NDEBUG
 	for( auto &m: M ) std::cout << m << ' '; std::cout << '\n';
-	for(auto & n: N) std::cout << n << ' '; std::cout << '\n';
+	for( auto &n: N ) std::cout << n << ' '; std::cout << '\n';
 #endif
 	std::vector<int> nj(M.size(),N.size());
 	sum = put_fishes(M,N,nj,k);
