@@ -2,7 +2,7 @@
 /* License: contact Michele Miccinesi */
 
 #include <bits/stdc++.h>
-//TODO: How to check properties of C?
+// How to check properties of C?
 template <class T, class C>
 struct heap{
 	struct type_traits{
@@ -67,7 +67,7 @@ public:
 		for( size_t n = (c.size()>>1); n; --n )
 			heapify_range(n,c.size(),traits.cmp);
 	}
-	void heapify_range(size_t s, size_t e, C& cmp){
+	void heapify_range(size_t s, size_t const& e, const C& cmp){
 		size_t ss = s;
 		while((ss<<=1) <= e){
 			if(ss!=e)
@@ -101,7 +101,7 @@ public:
 #endif
 		return c;
 	}
-	void push(T v){
+	void push(const T &v){
 		c.push_back(v);
 		for( size_t s = c.size(), sp = (s>>=1); sp; sp>>=1, s>>=1){
 			if( traits.cmp(tc[sp],tc[s]) )
@@ -167,12 +167,6 @@ public:
 		c.resize(c.size()-1);
 		if(t!=c.size()+1)	update(t,tc[t]);
 	}
-	void erase(const size_t&& t){
-		if(t<=0||t>c.size()) return;
-		tc[t]=c.back();
-		c.resize(c.size()-1);
-		if(t!=c.size()+1)	update(t,tc[t]);
-	}
 	void remove(const T& v){
 		erase(find(v));
 	}
@@ -189,8 +183,7 @@ public:
 				else break;
 			}
 	}
-	const T& operator[](size_t& t){ return tc[t]; }
-	const T& operator[](size_t &&t){ return tc[t]; }
+	const T& operator[](const size_t& t){ return tc[t]; }
 	void update(size_t t, const T& v){
 		tc[t]=v;
 		size_t k;
@@ -219,7 +212,7 @@ int main(){
 
 	struct compare{
 		compare(){}
-		const bool operator()( const int& a, const int& b ){
+		const bool operator()( const int& a, const int& b ) const{
 			return a<b;
 		}
 	} C;
@@ -248,3 +241,21 @@ int main(){
 	return 0;
 }
 #endif
+
+
+/* HEAP_test.py: 
+
+import random
+import sys
+
+n = int(sys.argv[1])
+
+print n
+v=[]
+for i in xrange(0,n):
+	v.append(random.randint(0,1000))
+	sys.stdout.write(str(v[-1])+' ')
+sys.stdout.flush()
+for i in v:
+	print i
+*/
