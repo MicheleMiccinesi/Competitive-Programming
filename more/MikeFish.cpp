@@ -3,7 +3,7 @@
 /* Solution License: contact Michele Miccinesi */
 
 /* Unefficient implementation (with 'fronzoli') */
-/* But the idea of the is problem simple & elegant */
+/* But the idea of the problem is simple & elegant */
 #define NDEBUG
 #include <iostream>		//cout, cin
 #include <vector>		//vector
