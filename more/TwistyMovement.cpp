@@ -39,6 +39,7 @@ int main(){
 	C2[0]=C2[1];
 
 	matrix T(n+2, n+2);
+	T(1, 1)=1;
 	for( int j=2; j!=n+1; ++j ){
 		if( V[n-j+1]==2 )
 			for( int i=1; i!=j; ++i )
