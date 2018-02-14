@@ -1,4 +1,4 @@
-/* Problem Source: codeforces 934C */
+/* Problem Source: codeforces div2 934C */
 /* Solution License: contact Michele Miccinesi */
 
 #include <iostream>
