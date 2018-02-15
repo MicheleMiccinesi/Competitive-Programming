@@ -1,8 +1,6 @@
 /* Problem Source: codeforces 934E (div2) == 933C (div1) */
 /* Solution License: contact Michele Miccinesi */
-/* nobody else solved the problem this way... */
-/* ...and there is a reason ^_^ */
-/* Try this one! The input is so simple... not more than 10 little numbers :) */
+/* exact solution (without approximations) */
 
 /* Note: I wanted to compare the performance of switch vs explicit jump table with function pointers */
 
