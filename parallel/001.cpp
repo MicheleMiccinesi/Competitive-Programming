@@ -165,7 +165,7 @@ class pipeline{
     pipe_source<pipeline<Args...>, Args ...> stages;    
 public:
     template <class F0, class F1, class ... Fs>
-    explicit pipeline(int n, int size, F0 f0, F1 f1, Fs ...fs) :
+    pipeline(int n, int size, F0 f0, F1 f1, Fs ...fs) :
     threads(), stages(n, size, this, f0, f1, fs ... )
     {
     }
