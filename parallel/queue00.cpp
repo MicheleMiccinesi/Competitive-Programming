@@ -1,4 +1,5 @@
 /* Another small exercise: thread safe queue using shared_mutexes */
+/* (So at least use C++17)                                        */
 /* License Info: contact Michele Miccinesi                        */
 
 #include <queue>
