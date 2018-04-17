@@ -6,11 +6,12 @@
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range2d.h"
 
+// BEGIN of the (corrected) interface given in classroom
 //default square area, lower left angle and size 
 const double DEFAULT_X {-0.96};
 const double  DEFAULT_Y {-0.2625}; 
-const double DEFAULT_SIZE {0.000001}; 
-const size_t DEFAULT_PIXELS {400};
+const double DEFAULT_SIZE {0.0000001}; 
+const size_t DEFAULT_PIXELS {4000};
 const int DEFAULT_ITERATIONS {6*256}; 
 const int MAX_SMODULUS {40}; //we assume a point diverges if squared modulus exceeds this value 
 
@@ -29,6 +30,7 @@ int mand_compute(double cx, double cy) {
 	} 
 	return i; 
 } 
+//END of the given interface
 
 template <class T>
 class matrix{
@@ -72,6 +74,7 @@ struct region2d{
 	matrix<char> to_char_image(const int max_color=255) {
 		matrix<char> image(dim_y, dim_x*3);
 		for( int i=0, j=0; i!=dim_x*dim_y; ++i, ++j ){
+			//some color effects
 			if( values[i]<=max_color ){
 				image[j]=values[i];
 				image[++j]=0;
@@ -126,9 +129,9 @@ public:
 
 	void operator() (const tbb::blocked_range2d<size_t, size_t>& rng) const {
 		size_t i{rng.rows().begin()};
-		for( double x=fractal->base_x+fractal->pixel_size*i; i!=rng.rows().end(); ++i, x+=fractal->pixel_size ){
+		for( double y=fractal->base_y+fractal->pixel_size*i; i!=rng.rows().end(); ++i, y+=fractal->pixel_size ){
 			size_t j{rng.cols().begin()};
-			for( double y=fractal->base_y+fractal->pixel_size*j; j!=rng.cols().end(); ++j, y+=fractal->pixel_size ){
+			for( double x=fractal->base_x+fractal->pixel_size*j; j!=rng.cols().end(); ++j, x+=fractal->pixel_size ){
 				fractal->values(i, j) = mand_compute(x, y);
 				//std::cout << x << ' ' << x <<' '<<mand_compute(x, y) << std::endl;
 			}
