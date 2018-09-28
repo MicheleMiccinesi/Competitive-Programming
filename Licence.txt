@@ -1,6 +1,8 @@
-"ICH WILL :)" licence
+Author: Michele Miccinesi 
+Contact: name.surname@gmail.com
 
-Il codice in questo Repository è a unica disposizione di chi partecipa al corso "competitive programming and contests" 2017/18 offerto dall'Università di Pisa e ha avuto un riscontro positivo dall'autore.
-Per qualsiasi altra informazione riguardo la licenza si contatti l'autore.
-"ICH WILL :)" Copyright 2017-2117 Michele Miccinesi
+If you want some info about my code or about its license, get in touch with me!
+Be aware, until you contact me all this material is strictly protected by copyright laws!
+
+"ICH WILL" Copyright 2017-2117 Michele Miccinesi
 All uses of the materials in my repositories are disciplined by my willings.
